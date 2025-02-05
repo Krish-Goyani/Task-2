@@ -22,3 +22,6 @@ class ProductsController:
     
     async def update_product_details_controller(self, product_id, update_data, current_user):
         return await self.products_usecases.update_product_usecase(product_id, update_data, current_user)
+    
+    async def delete_product_controller(self, product_id, current_user):
+        return await self.products_usecases.delete_product_usecase(product_id, current_user)

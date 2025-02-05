@@ -5,6 +5,8 @@ from fastapi import Depends
 from src.app.model.domain.products import Product
 from bson import ObjectId
 
+from fastapi.exceptions import HTTPException
+
 class UserRepository:
     def __init__(self) -> None:
         pass
@@ -47,16 +49,24 @@ class UserRepository:
     
     async def fetch_product_details(self, product_id, products_collection):
         details = await products_collection.find_one({"_id" : ObjectId(product_id)})
-        print(details)
-        print("=========")
+
         details["_id"] = str(details["_id"])
         return details
     
     async def update_product_details(self, product_id, update_data, produts_collection):
         return await produts_collection.update_one({"_id": ObjectId(product_id)}, {"$set": update_data})
         
+    async def delete_product(self, product_id, product_collection):
+        deleted_result = await product_collection.delete_one(
+            {"_id": ObjectId(product_id)}
+        )
+        if deleted_result.deleted_count ==0:
+            raise HTTPException(status_code=404,
+                                detail="user not found")
         
-        
-        
+        return {"message" : "product deleted successfully"}
+            
+            
+            
         
         

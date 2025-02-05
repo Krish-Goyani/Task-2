@@ -71,3 +71,16 @@ class ProductsUseCases:
         # Call the service to update the product.
         await self.products_service.update_product_service(product_id, update_data)
         return {"message" : "Product updated successfully"}
+    
+    async def delete_product_usecase(self, product_id, current_user):
+        # Retrieve the product by its id
+        existing_product = await self.products_service.products_details_service(product_id)
+        if not existing_product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+
+        # Check if the product belongs to the current seller
+        if str(existing_product.get("seller_id")) != str(current_user["_id"]):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this product")
+        
+        return await self.products_service.product_delete_service(product_id, self.products_collection)
+        

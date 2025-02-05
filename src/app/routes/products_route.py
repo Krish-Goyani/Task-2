@@ -34,3 +34,8 @@ async def get_product_details(product_id : str  , products_controller = Depends(
 @authorize(role=["seller"])
 async def update_product_detaisl(request : Request, product_id : str, update_data: ProductUpdate, current_user: User = Depends(get_current_user),  products_controller = Depends(ProductsController)):
     return await products_controller.update_product_details_controller(product_id, update_data, current_user)
+
+@products_router.delete("/{product_id}")
+@authorize(role=["seller"])
+async def delete_product(request: Request,  product_id : str, current_user: User = Depends(get_current_user),  products_controller = Depends(ProductsController)):
+    return await products_controller.delete_product_controller(product_id, current_user)

@@ -31,3 +31,6 @@ class ProductsService:
     async def update_product_service(self, product_id, update_data):
         return await self.user_repository.update_product_details(product_id, update_data, self.products_collection)
     
+    async def product_delete_service(self, product_id, product_collection):
+        return await self.user_repository.delete_product(product_id, product_collection)
+    
