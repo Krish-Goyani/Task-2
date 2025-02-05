@@ -3,14 +3,14 @@ from typing import List, Literal
 from bson import ObjectId
 
 class CartItem(BaseModel):
-    user_id: ObjectId
-    product_id: ObjectId
+    user_id: str
+    product_id: str
     quantity: int
-    
+    price: float
     
 
 class OrderItem(BaseModel): # ---> structure
-    product_id: ObjectId
+    product_id: str
     quantity: int
     price: float
 

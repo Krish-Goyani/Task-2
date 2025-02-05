@@ -4,6 +4,7 @@ from src.app.model.domain.user import User
 from fastapi import Depends
 from src.app.model.domain.products import Product
 from bson import ObjectId
+from src.app.model.domain.items import CartItem
 
 from fastapi.exceptions import HTTPException
 
@@ -65,6 +66,13 @@ class UserRepository:
                                 detail="user not found")
         
         return {"message" : "product deleted successfully"}
+    
+    async def insert_cart_item(self, cart_item, cart_orders_collection):
+        cart_item = CartItem(user_id= cart_item["user_id"],
+                             product_id= cart_item["product_id"],
+                             quantity= cart_item["quantity"],
+                             price= cart_item["price"])
+        return await cart_orders_collection.insert_one(cart_item.to_dict())
             
             
             

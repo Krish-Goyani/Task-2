@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     PRODUCTS_URL : str
     PRODUCTS_DB_NAME : str
     PRODUCTS_COLLECTION_NAME : str
+    CART_AND_ORDERS_COLLECTION_NAME: str
+    CART_AND_ORDERS_DB_NAME : str
+    
 
     class Config:
         env_file = "src/.env"

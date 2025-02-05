@@ -27,7 +27,7 @@ class AuthService:
         user = await self.user_repository.find_user_by_email(form_data.username, self.auth_collection)
         if user is None:
             pass
-        
+
         # Verify the password
         hashed_pass = user["password_hash"]
         if not verify_password(form_data.password, hashed_pass):
