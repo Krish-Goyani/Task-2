@@ -9,6 +9,6 @@ class Product(BaseModel):
     price: float
     rating: float
     brand: str
-    images: List[str]
-    thumbnail: str
-    seller_id: ObjectId = ObjectId("000000000000000000000000")
+    images: List[str] | None = None
+    thumbnail: str | None = None
+    seller_id: str

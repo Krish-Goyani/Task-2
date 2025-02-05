@@ -4,7 +4,7 @@ from src.app.services.products_service import ProductsService
 from src.app.repositories.user_repository import UserRepository
 from fastapi import Depends
 from src.app.config.database import mongodb_database
-
+from src.app.model.schemas.product_schemas import Product
 class ProductsUseCases:
     def __init__(self, products_service = Depends(ProductsService), products_collection = Depends(mongodb_database.get_products_collection), user_repository = Depends(UserRepository)):
         self.products_service = products_service
@@ -30,7 +30,7 @@ class ProductsUseCases:
                 "brand": product.get("brand"),
                 "images": product.get("images"),
                 "thumbnail": product.get("thumbnail"),
-                "seller_id": ObjectId("000000000000000000000000"),
+                "seller_id": "000000000000000000000000",
                 "created_at": product.get("meta", {}).get("createdAt"),
                 "updated_at": product.get("meta", {}).get("updatedAt")
             }
@@ -39,3 +39,12 @@ class ProductsUseCases:
         # Use the repository to insert the products into MongoDB.
         await self.user_repository.insert_products(products, self.products_collection)
         return "data loaded"
+
+    async def add_product_usecase(self, product : Product):
+        await self.products_service.insert_product(product)
+        return {"message" : "product uploaded"}
+    
+    async def fetch_all_products_usecase(self):
+        return await self.products_service.fetch_all_products()
+    async def products_details_usecase(self, product_id):
+        return await self.products_service.products_details_service(product_id)
