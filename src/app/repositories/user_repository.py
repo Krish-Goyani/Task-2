@@ -49,8 +49,7 @@ class UserRepository:
         return all_products
 
     async def fetch_product_details(self, product_id, products_collection):
-        print("=================")
-        print(product_id, products_collection)
+
         details = await products_collection.find_one({"_id": ObjectId(product_id)})
         print(details)
         details["_id"] = str(details["_id"])

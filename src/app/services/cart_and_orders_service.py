@@ -47,7 +47,7 @@ class CartOrderService:
         for item in cart_items:
             product_id = item.get("product_id")
             quantity = item.get("quantity")
-            product = await self.user_repository.fetch_product_details(user_id, self.products_collection)
+            product = await self.user_repository.fetch_product_details(product_id, self.products_collection)
             if not product:
                 # Optionally, you can choose to skip or fail if a product is missing.
                 continue
@@ -75,4 +75,7 @@ class CartOrderService:
         await self.items_repository.clear_cart(user_id, self.cart_collection)
 
         return {"message" : "Order placed successfully"}
+    
+    async def get_orders(self, user_id : str):
+        return await self.items_repository.get_orders(user_id, self.orders_collection)
     

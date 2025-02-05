@@ -42,7 +42,24 @@ class ItemsRepository:
         return cart_items
                         
     async def clear_cart(self, user_id: str, collection):
-        await collection.delete_many({"user_id": str(user_id)})
+        return await collection.delete_many({"user_id": str(user_id)})
         
     async def insert_order(self, order: dict, collection):
-        await collection.insert_one(order)
+        return await collection.insert_one(order)
+        
+        
+    async def get_orders(self, user_id: str, collection) -> List[dict]:
+        try:
+            # Convert user_id to ObjectId for the query if necessary.
+            user_oid = ObjectId(user_id)
+        except Exception:
+            # If conversion fails, assume user_id is stored as a string.
+            user_oid = user_id
+
+        cursor = await collection.find({"user_id": user_oid}).to_list()
+        orders = []
+        for order in cursor:
+            order["_id"] = str(order.get("_id"))
+            order["user_id"] = str(order.get("user_id"))
+            orders.append(order)
+        return orders
