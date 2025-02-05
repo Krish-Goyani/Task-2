@@ -11,4 +11,4 @@ class Product(BaseModel):
     brand: str
     images: List[str]
     thumbnail: str
-    seller_id: ObjectId
+    seller_id: ObjectId = ObjectId("000000000000000000000000")

@@ -1,10 +1,10 @@
 
 from src.app.config.database import mongodb_database
 from src.app.model.domain.user import User
-
+from fastapi import Depends
 
 class UserRepository:
-    def __init__(self) -> None:
+    def __init__(self, ) -> None:
         pass
     
     async def find_user_by_email(self, email: str, auth_collection):
@@ -18,5 +18,9 @@ class UserRepository:
                     role= user_data["role"])
         
         return await auth_collection.insert_one(user.to_dict())
+    
+    async def insert_products(self, products, products_collection):
+        return await products_collection.insert_many(products)
         
-user_repository = UserRepository()
+        
+        

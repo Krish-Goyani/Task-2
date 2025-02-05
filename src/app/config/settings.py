@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     ALGORITHM : str
     JWT_SECRET_KEY : str
     TOKEN_URL : str
+    PRODUCTS_URL : str
+    PRODUCTS_DB_NAME : str
+    PRODUCTS_COLLECTION_NAME : str
 
     class Config:
         env_file = "src/.env"

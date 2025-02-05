@@ -39,7 +39,20 @@ class MongoDB:
                 status_code=500,
                 detail=f"Unable to access auth collection: {str(e)}"
             )
-
+    def get_products_collection(self):
+        try:
+            if not self.mongodb_client:
+                raise HTTPException(
+                    status_code=503,
+                    detail="MongoDB client is not connected."
+                )
+            return self.mongodb_client[settings.PRODUCTS_DB_NAME][settings.PRODUCTS_COLLECTION_NAME]
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Unable to access auth collection: {str(e)}"
+            )
+            
     def disconnect(self):
         try:
             if self.mongodb_client:
