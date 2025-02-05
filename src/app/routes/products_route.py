@@ -39,3 +39,7 @@ async def update_product_detaisl(request : Request, product_id : str, update_dat
 @authorize(role=["seller"])
 async def delete_product(request: Request,  product_id : str, current_user: User = Depends(get_current_user),  products_controller = Depends(ProductsController)):
     return await products_controller.delete_product_controller(product_id, current_user)
+
+@products_router.get("/download/{product_id}")
+async def download_product_detail(product_id : str, products_controller = Depends(ProductsController)):
+    return await products_controller.download_product_controller(product_id)

@@ -83,4 +83,7 @@ class ProductsUseCases:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this product")
         
         return await self.products_service.product_delete_service(product_id, self.products_collection)
+    
+    async def download_product(self, product_id: str):
+        return await self.products_service.products_details_service(product_id)
         
