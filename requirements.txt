@@ -1,0 +1,17 @@
+fastapi[standard]
+pydantic
+python-multipart
+redis
+motor
+pydantic-settings
+PyJWT
+passlib
+cryptography
+jwt
+jose
+python-jose
+locust
+slowapi==0.1.9
+bcrypt==4.0.1
+pymongo
+bson
