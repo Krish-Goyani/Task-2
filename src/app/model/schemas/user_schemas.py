@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Literal
+from bson import ObjectId
 
 class User(BaseModel):
     name: str

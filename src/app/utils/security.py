@@ -46,8 +46,7 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
     return enocoded_jwt
 
 
-async def get_current_user(token: str = Depends(reuseable_oauth), auth_collection = Depends(mongodb_database.get_auth_collection)) -> User:
-    
+async def get_current_user(token: str = Depends(reuseable_oauth), auth_collection = Depends(mongodb_database.get_auth_collection)):
     try:
         payload = jwt.decode(
             token, settings.JWT_SECRET_KEY, settings.ALGORITHM
@@ -68,13 +67,13 @@ async def get_current_user(token: str = Depends(reuseable_oauth), auth_collectio
         )
 
     user = await auth_collection.find_one({"email": token_data.sub})
+    
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-        
-    return User(**user)
+    return user
 
 
 def authorize(role: list):
@@ -82,7 +81,7 @@ def authorize(role: list):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             user = kwargs.get("current_user")
-            if user.role not in role:
+            if user["role"] not in role:
                 raise HTTPException(status_code=403, detail="User is not authorized to access")
             return await func(*args, **kwargs)
         return wrapper

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from bson import ObjectId
 
 class Product(BaseModel):
@@ -12,3 +12,13 @@ class Product(BaseModel):
     images: List[str] | None = None
     thumbnail: str | None = None
     seller_id: str
+
+class ProductUpdate(BaseModel):
+    title: Optional[str]
+    description: Optional[str]
+    category: Optional[str]
+    price: Optional[float]
+    rating: Optional[float]
+    brand: Optional[str]
+    images: Optional[List[str]]
+    thumbnail: Optional[str]

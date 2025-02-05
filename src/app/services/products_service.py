@@ -28,3 +28,6 @@ class ProductsService:
     async def products_details_service(self, product_id):
         return await self.user_repository.fetch_product_details(product_id, self.products_collection)
     
+    async def update_product_service(self, product_id, update_data):
+        return await self.user_repository.update_product_details(product_id, update_data, self.products_collection)
+    

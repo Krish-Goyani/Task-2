@@ -14,11 +14,12 @@ class UserRepository:
         
         
     async def insert_user(self, user_data, auth_collection):
-        user = User(name= user_data["name"],
+        user = User(
+                    name= user_data["name"],
                     email= user_data["email"],
                     password_hash= user_data["password_hash"],
                     role= user_data["role"])
-        
+
         return await auth_collection.insert_one(user.to_dict())
     
     async def insert_products(self, products, products_collection):
@@ -46,8 +47,13 @@ class UserRepository:
     
     async def fetch_product_details(self, product_id, products_collection):
         details = await products_collection.find_one({"_id" : ObjectId(product_id)})
+        print(details)
+        print("=========")
         details["_id"] = str(details["_id"])
         return details
+    
+    async def update_product_details(self, product_id, update_data, produts_collection):
+        return await produts_collection.update_one({"_id": ObjectId(product_id)}, {"$set": update_data})
         
         
         

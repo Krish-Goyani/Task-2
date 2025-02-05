@@ -19,9 +19,9 @@ class AuthService:
         data = userdata.model_dump()
         data["password_hash"] = get_hashed_password(data["password"])
         
-        await self.user_repository.insert_user(data, self.auth_collection)
+        insertion_result = await self.user_repository.insert_user(data, self.auth_collection)
         
-        return data
+        return str(insertion_result.inserted_id)
     
     async def login_user_service(self, form_data):
         user = await self.user_repository.find_user_by_email(form_data.username, self.auth_collection)

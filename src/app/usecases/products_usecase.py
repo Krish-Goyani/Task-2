@@ -2,9 +2,13 @@
 from bson import ObjectId
 from src.app.services.products_service import ProductsService
 from src.app.repositories.user_repository import UserRepository
-from fastapi import Depends
+from fastapi import Depends, status
 from src.app.config.database import mongodb_database
 from src.app.model.schemas.product_schemas import Product
+from fastapi.exceptions import HTTPException
+from src.app.model.schemas.product_schemas import ProductUpdate
+from datetime import datetime
+
 class ProductsUseCases:
     def __init__(self, products_service = Depends(ProductsService), products_collection = Depends(mongodb_database.get_products_collection), user_repository = Depends(UserRepository)):
         self.products_service = products_service
@@ -46,5 +50,24 @@ class ProductsUseCases:
     
     async def fetch_all_products_usecase(self):
         return await self.products_service.fetch_all_products()
+    
     async def products_details_usecase(self, product_id):
         return await self.products_service.products_details_service(product_id)
+    
+    async def update_product_usecase(self, product_id: str, product: ProductUpdate, current_user):
+        # Retrieve the product by its id
+        existing_product = await self.products_service.products_details_service(product_id)
+        if not existing_product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+
+        # Check if the product belongs to the current seller
+        if str(existing_product.get("seller_id")) != str(current_user["_id"]):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this product")
+        
+        # Prepare the update payload; set updated_at timestamp.
+        update_data = product.dict(exclude_unset=True)
+        update_data["updated_at"] = datetime.utcnow()
+        
+        # Call the service to update the product.
+        await self.products_service.update_product_service(product_id, update_data)
+        return {"message" : "Product updated successfully"}
