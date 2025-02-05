@@ -29,6 +29,8 @@ class AuthService:
             pass
 
         # Verify the password
+        print(user)
+        print("============")
         hashed_pass = user["password_hash"]
         if not verify_password(form_data.password, hashed_pass):
             pass

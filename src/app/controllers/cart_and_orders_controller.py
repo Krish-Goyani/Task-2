@@ -14,3 +14,9 @@ class CartOrderController:
     async def remove_from_cart_controller(self, current_user, product_id: str):
         result = await self.cart_order_usecase.remove_from_cart(current_user, product_id)
         return result
+    
+    async def get_cart_items_controller(self, curent_user):
+        return await self.cart_order_usecase.get_cart_items(curent_user["_id"])
+    
+    async def place_order_controller(self, curent_user):
+        return await self.cart_order_usecase.place_order_usecase(curent_user["_id"])

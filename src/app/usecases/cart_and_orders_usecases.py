@@ -18,3 +18,9 @@ class CartOrdersUsecase:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Product not found in cart")
         return {"message": "Product removed from cart successfully"}
+    
+    async def get_cart_items(self, user_id):
+        return await self.cart_order_service.get_cart_items(user_id)
+    
+    async def place_order_usecase(self, user_id):
+        return await self.cart_order_service.place_order(user_id)

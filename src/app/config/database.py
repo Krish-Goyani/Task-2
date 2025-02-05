@@ -53,14 +53,28 @@ class MongoDB:
                 detail=f"Unable to access auth collection: {str(e)}"
             )
             
-    def get_cart_and_orders_collection(self):
+    def get_cart_collection(self):
         try:
             if not self.mongodb_client:
                 raise HTTPException(
                     status_code=503,
                     detail="MongoDB client is not connected."
                 )
-            return self.mongodb_client[settings.CART_AND_ORDERS_DB_NAME][settings.CART_AND_ORDERS_COLLECTION_NAME]
+            return self.mongodb_client[settings.CART_DB_NAME][settings.CARTCOLLECTION_NAME]
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Unable to access auth collection: {str(e)}"
+            )
+            
+    def get_orders_collection(self):
+        try:
+            if not self.mongodb_client:
+                raise HTTPException(
+                    status_code=503,
+                    detail="MongoDB client is not connected."
+                )
+            return self.mongodb_client[settings.ORDER_DB_NAME][settings.ORDER_COLLECTION_NAME]
         except Exception as e:
             raise HTTPException(
                 status_code=500,
