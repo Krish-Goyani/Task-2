@@ -37,3 +37,6 @@ class CartOrdersUsecase:
                 item["product_id"] = str(item.get("product_id"))
             orders.append(Order(**order))
         return orders
+    
+    async def get_order_detail(self, order_id : str):
+        return await self.cart_order_service.get_order_detail(order_id)

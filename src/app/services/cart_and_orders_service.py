@@ -64,7 +64,7 @@ class CartOrderService:
             "user_id": user_id,
             "items": order_items,
             "total_amount": total_amount,
-            "status": "pending",
+            "status": "delivered",
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         }
@@ -78,4 +78,7 @@ class CartOrderService:
     
     async def get_orders(self, user_id : str):
         return await self.items_repository.get_orders(user_id, self.orders_collection)
+    
+    async def get_order_detail(self, order_id : str):
+        return await self.items_repository.get_order_detail(order_id, self.orders_collection)
     

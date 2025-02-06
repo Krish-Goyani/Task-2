@@ -38,3 +38,9 @@ async def place_order(current_user = Depends(get_current_user), cart_orders_cont
 @authorize(role=["buyer"])
 async def get_order(current_user = Depends(get_current_user), cart_orders_controller = Depends(CartOrderController)):
     return await cart_orders_controller.get_orders_controller(current_user)
+
+@cart_and_orders_router.get("/orders/{order_id}")
+@authorize(role = ["buyer"])
+async def get_order_detail(order_id : str, current_user = Depends(get_current_user), cart_orders_controller = Depends(CartOrderController)):
+    return await cart_orders_controller.get_order_detail_controller(order_id)
+

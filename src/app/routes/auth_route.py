@@ -7,10 +7,11 @@ from src.app.config.database import mongodb_database
 from src.app.model.schemas.user_schemas import TokenSchema
 from src.app.controllers.auth_controller import AuthController
 from src.app.utils.security import authorize
+from src.app.utils.security import get_current_user
 
-auth_router = APIRouter(prefix="/auth", tags=["Auth"])
+auth_router = APIRouter(tags=["Auth"])
 
-@auth_router.post("/register")
+@auth_router.post("/auth/register")
 @limiter.limit("10/minute")
 async def register_user(request: Request, userdata : UserIn, auth_controller = Depends(AuthController)):
     try:
@@ -19,7 +20,7 @@ async def register_user(request: Request, userdata : UserIn, auth_controller = D
     except Exception:
         raise
 
-@auth_router.post('/login', summary="Create access and refresh tokens for user", response_model=TokenSchema)
+@auth_router.post('/auth/login', summary="Create access and refresh tokens for user", response_model=TokenSchema)
 @limiter.limit("10/minute")
 async def user_login(request : Request, form_data: OAuth2PasswordRequestForm = Depends(), auth_controller = Depends(AuthController)):
     try:
@@ -27,3 +28,8 @@ async def user_login(request : Request, form_data: OAuth2PasswordRequestForm = D
         return response
     except Exception:
         raise
+    
+    
+@auth_router.get("/users/me")
+async def get_currently_authenticated_user(current_user = Depends(get_current_user), auth_controller = Depends(AuthController)):
+    return await auth_controller.current_user_controller(current_user)

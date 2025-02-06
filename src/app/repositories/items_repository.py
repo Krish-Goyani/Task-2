@@ -63,3 +63,10 @@ class ItemsRepository:
             order["user_id"] = str(order.get("user_id"))
             orders.append(order)
         return orders
+    
+    async def get_order_detail(self, order_id,collection):
+        order_details = await collection.find_one({"_id" : ObjectId(order_id)})
+        order_details["_id"] = str(order_details["_id"])
+        order_details["user_id"] = str(order_details["user_id"])
+        return order_details
+        

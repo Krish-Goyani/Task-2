@@ -23,3 +23,5 @@ class CartOrderController:
     
     async def get_orders_controller(self, current_user):
         return await self.cart_order_usecase.get_orders(current_user["_id"])
+    async def get_order_detail_controller(self, order_id: str):
+        return await self. cart_order_usecase.get_order_detail(order_id)
