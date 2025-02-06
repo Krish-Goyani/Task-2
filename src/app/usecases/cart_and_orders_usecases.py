@@ -22,8 +22,8 @@ class CartOrdersUsecase:
     async def get_cart_items(self, user_id):
         return await self.cart_order_service.get_cart_items(user_id)
     
-    async def place_order_usecase(self, user_id):
-        return await self.cart_order_service.place_order(user_id)
+    async def place_order_usecase(self, user_id, user_email):
+        return await self.cart_order_service.place_order(user_id, user_email)
     
     async def get_orders(self, user_id: str) -> List[Order]:
         # Retrieve orders from the service layer.

@@ -19,7 +19,7 @@ class CartOrderController:
         return await self.cart_order_usecase.get_cart_items(curent_user["_id"])
     
     async def place_order_controller(self, curent_user):
-        return await self.cart_order_usecase.place_order_usecase(curent_user["_id"])
+        return await self.cart_order_usecase.place_order_usecase(curent_user["_id"], curent_user["email"])
     
     async def get_orders_controller(self, current_user):
         return await self.cart_order_usecase.get_orders(current_user["_id"])

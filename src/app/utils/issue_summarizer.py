@@ -4,7 +4,6 @@ from src.app.config.settings import settings
 
 class IssueSummarizer:
     def __init__(self):
-        # Initialize Gemini Pro model
         self.llm = GoogleGenerativeAI(
             model="gemini-1.5-flash",  
             google_api_key=settings.GEMINI_API_KEY

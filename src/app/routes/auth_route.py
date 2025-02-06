@@ -35,7 +35,7 @@ async def user_login(request : Request, form_data: OAuth2PasswordRequestForm = D
 async def get_currently_authenticated_user(current_user = Depends(get_current_user), auth_controller = Depends(AuthController)):
     return await auth_controller.current_user_controller(current_user)
 
-@auth_router.get("/usesrs")
+@auth_router.get("/users")
 @authorize(role=["admin"])
 async def get_all_users(current_user = Depends(get_current_user), auth_controller = Depends(AuthController)) -> List[UserOut]:
     return await auth_controller.get_all_users_controller()

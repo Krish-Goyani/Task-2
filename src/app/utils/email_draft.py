@@ -2,7 +2,6 @@ from src.app.utils.issue_summarizer import IssueSummarizer
 
 class EmailDraftUtil:
     def __init__(self, summarizer=None) -> None:
-        # If no summarizer is provided, instantiate one directly
         if summarizer is None:
             summarizer = IssueSummarizer()
         self.summarizer = summarizer.summarize_issue

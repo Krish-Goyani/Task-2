@@ -2,7 +2,6 @@ import os
 from google.cloud import storage
 from src.app.config.settings import settings
 
-# Ensure you set the environment variable GOOGLE_APPLICATION_CREDENTIALS
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = settings.SERVICE_ACCOUNT_JSON
 
 

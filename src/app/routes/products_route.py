@@ -26,7 +26,7 @@ async def add_product(request : Request, product : Product , current_user: User 
 @products_router.get("/")
 async def get_all_products(products_controller = Depends(ProductsController)):
     return await products_controller.fetch_all_products_controller()
-@products_router.get("{product_id}")
+@products_router.get("/{product_id}")
 async def get_product_details(product_id : str  , products_controller = Depends(ProductsController)):
     return await products_controller.products_details_controller(product_id)
 
