@@ -17,6 +17,8 @@ class AuthController:
     
     async def get_all_users_controller(self):
         return await self.auth_usecases.get_all_users()
+    async def update_user_role_controller(self, user_id, new_role):
+        return await self.auth_usecases.update_user_role(user_id, new_role)
 
     
     

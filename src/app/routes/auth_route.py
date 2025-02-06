@@ -39,3 +39,8 @@ async def get_currently_authenticated_user(current_user = Depends(get_current_us
 @authorize(role=["admin"])
 async def get_all_users(current_user = Depends(get_current_user), auth_controller = Depends(AuthController)) -> List[UserOut]:
     return await auth_controller.get_all_users_controller()
+
+@auth_router.put("/users/{user_id}/role")
+@authorize(role = ["admin"])
+async def update_user_role(user_id : str, role, current_user = Depends(get_current_user), auth_controller = Depends(AuthController)):
+    return await auth_controller.update_user_role_controller(user_id, role)

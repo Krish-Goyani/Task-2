@@ -21,4 +21,7 @@ class AuthUseCases:
     async def get_all_users(self):
         return await self.auth_service.get_all_users()
 
+    async def update_user_role(self, user_id, new_role):
+        await self.auth_service.update_user_role(user_id, new_role)
+        return {"message" : "User role updated successfully"}
 

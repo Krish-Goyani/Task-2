@@ -42,3 +42,7 @@ class AuthService:
 
     async def get_all_users(self):
         return await self.user_repository.get_all_users(self.auth_collection)
+    
+    async def update_user_role(self, user_id, new_role):
+        return await self.user_repository.update_user_role(user_id, new_role, self.auth_collection)
+        

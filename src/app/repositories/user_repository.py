@@ -84,5 +84,13 @@ class UserRepository:
             user_list.append(UserOut(**user))
             
         return user_list
+    
+    async def update_user_role(self, user_id: str, new_role: str, collection):
+        try:
+            oid = ObjectId(user_id)
+        except Exception:
+            # Optionally, raise an error if the user_id is not a valid ObjectId.
+            oid = user_id  # or handle the error appropriately
+        return await collection.update_one({"_id": oid}, {"$set": {"role": new_role}})
             
         
