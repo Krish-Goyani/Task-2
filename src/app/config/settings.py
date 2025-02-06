@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     CARTCOLLECTION_NAME : str
     ORDER_DB_NAME : str
     ORDER_COLLECTION_NAME  : str
+    SERVICE_ACCOUNT_JSON : str
+    BUCKET_NAME : str
+    GEMINI_API_KEY : str
+    DELEGATE_EMAIL : str
+    COMPLAINT_DB_NAME : str
+    COMPLAINT_COLLECTION_NAME  : str
         
 
     class Config:

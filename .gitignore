@@ -176,3 +176,6 @@ Peak Plasma Data.json
 Meeting Agenda.pdf
 temp.pdf
 video_file.mp4
+
+src/app/utils/google_credentials/*.json
+src/PeakPlasmaData.json
