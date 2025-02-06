@@ -17,6 +17,8 @@ class AuthUseCases:
     async def get_current_user(self, current_user):
         current_user["_id"] = str(current_user["_id"])
         return UserOut(**current_user)
-        
+    
+    async def get_all_users(self):
+        return await self.auth_service.get_all_users()
 
 

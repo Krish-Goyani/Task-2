@@ -5,9 +5,9 @@ from fastapi import Depends
 from src.app.model.domain.products import Product
 from bson import ObjectId
 from src.app.model.domain.items import CartItem
-
+from src.app.model.schemas.user_schemas import UserOut
 from fastapi.exceptions import HTTPException
-
+from typing import List
 
 class UserRepository:
     def __init__(self) -> None:
@@ -74,3 +74,15 @@ class UserRepository:
                              quantity=cart_item["quantity"],
                              price=cart_item["price"])
         return await cart_orders_collection.insert_one(cart_item.to_dict())
+    
+    
+    async def get_all_users(self, collection)-> List[UserOut]:
+        users = await collection.find().to_list()
+        user_list = []
+        for user in users:
+            user["_id"] = str(user["_id"])
+            user_list.append(UserOut(**user))
+            
+        return user_list
+            
+        

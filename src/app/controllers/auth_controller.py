@@ -14,6 +14,9 @@ class AuthController:
         return await self.auth_usecases.user_login_usecase(form_data)
     async def current_user_controller(self, current_user):
         return await self.auth_usecases.get_current_user(current_user)
+    
+    async def get_all_users_controller(self):
+        return await self.auth_usecases.get_all_users()
 
     
     

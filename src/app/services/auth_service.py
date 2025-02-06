@@ -39,3 +39,6 @@ class AuthService:
         return {
             "access_token": access_token,
         }
+
+    async def get_all_users(self):
+        return await self.user_repository.get_all_users(self.auth_collection)
