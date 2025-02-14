@@ -129,7 +129,7 @@ class UserRepository:
         return {"message": "User role updated successfully"}
 
     async def get_admins_email(self, collection):
-        admins_cursor = await collection.find({"role": "admin"}, {"email": 1, "_id": 0})
+        admins_cursor = collection.find({"role": "admin"}, {"email": 1, "_id": 0})
 
         admin_emails = [admin["email"] for admin in await admins_cursor.to_list(length=None)]
 
@@ -142,6 +142,8 @@ class UserRepository:
     async def get_seller_email(self, product_id, products_collection,auth_collection ):
         product_detail = await self.fetch_product_details(product_id, products_collection)
         seller_id = product_detail["seller_id"]
-        seller_details = await auth_collection.find({"_id" : ObjectId(seller_id)})
-        seller_email = seller_details["email"]
-        return seller_email
+        seller_details = await auth_collection.find_one({"_id" : ObjectId(seller_id)})
+        if seller_details:
+            seller_email = seller_details["email"]
+            return seller_email
+        return "default@seller.com"

@@ -4,11 +4,13 @@ from src.app.model.schemas.complaints_schemas import Complaint
 from src.app.utils.security import get_current_user
 import uuid
 from src.app.utils.security import authorize
+from typing import List
+from src.app.model.schemas.complaints_schemas import ComplaintResponse
 
 complaints_router = APIRouter()
 
 @complaints_router.post("/complaints/")
-@authorize(role=["buyer"])
+@authorize(role=["buyer", "admin"])
 async def file_complaint(
     user_id: str ,
     order_id: str ,
@@ -37,3 +39,30 @@ async def file_complaint(
         status="open"
     )
     return await controller.file_complaint(complaint_data)
+
+
+
+@complaints_router.get("/complaints/", response_model=List[ComplaintResponse])
+@authorize(role=["seller", "admin"])
+async def get_all_complaints(
+    request: Request,
+    controller: ComplaintsController = Depends(),
+    current_user = Depends(get_current_user)
+):
+    """
+    Returns all complaints available in the database.
+    """
+    return await controller.get_all_complaints()
+
+
+@complaints_router.get("/complaints/{complaint_id}", response_model=ComplaintResponse)
+@authorize(role=["seller", "admin"])
+async def get_complaint_by_id(
+    complaint_id: str,
+    current_user = Depends(get_current_user),
+    controller: ComplaintsController = Depends()
+):
+    """
+    Fetches details of a specific complaint.
+    """
+    return await controller.get_complaint_by_id(complaint_id)

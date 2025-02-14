@@ -7,6 +7,7 @@ from fastapi.requests import Request
 from src.app.model.schemas.user_schemas import User
 from src.app.utils.security import get_current_user
 from src.app.model.schemas.product_schemas import ProductUpdate
+from fastapi import UploadFile
 
 products_router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -19,13 +20,14 @@ async def preload_products(request: Request, products_controller = Depends(Produ
     return {"message": result}
 
 @products_router.post("/")
-@authorize(role=["seller"])
+@authorize(role=["seller", "admin"])
 async def add_product(request : Request, product : Product , current_user: User = Depends(get_current_user) ,  products_controller = Depends(ProductsController)):
     return await products_controller.add_product(product)
 
 @products_router.get("/")
 async def get_all_products(products_controller = Depends(ProductsController)):
     return await products_controller.fetch_all_products_controller()
+
 @products_router.get("/{product_id}")
 async def get_product_details(product_id : str  , products_controller = Depends(ProductsController)):
     return await products_controller.products_details_controller(product_id)
@@ -43,3 +45,17 @@ async def delete_product(request: Request,  product_id : str, current_user: User
 @products_router.get("/download/{product_id}")
 async def download_product_detail(product_id : str, products_controller = Depends(ProductsController)):
     return await products_controller.download_product_controller(product_id)
+
+
+'''@products_router.post("/upload-pdf")
+@authorize(role=["seller"])
+async def upload_product_pdf(
+    file: UploadFile,
+    current_user = Depends(get_current_user),  # Ensure seller access
+    controller: ProductsController = Depends()
+):
+    """
+    Allows Sellers to upload a PDF containing product details.
+    The PDF is processed using data loaders and an LLM to extract product details.
+    """
+    return await controller.upload_pdf(file, current_user)'''

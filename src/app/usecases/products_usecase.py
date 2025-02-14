@@ -14,6 +14,7 @@ class ProductsUseCases:
         self.products_service = products_service
         self.products_collection = products_collection
         self.user_repository = user_repository
+        
 
     async def preload_products(self) -> str:
         # Fetch products data from DummyJSON asynchronously.
@@ -86,4 +87,15 @@ class ProductsUseCases:
     
     async def download_product(self, product_id: str):
         return await self.products_service.products_details_service(product_id)
+    
+    
+    async def process_pdf_upload(self, file, current_user):
+        product_data = await self.products_service.extract_product_from_pdf(file)
+        
+        # Set the seller_id (if not already set) to the current user's id.
+        product_data["seller_id"] = current_user["_id"]
+        
+        # Insert the product into the database.
+        await self.products_service.insert_product(product_data)
+        return {"message": "Product details uploaded and processed successfully"}
         

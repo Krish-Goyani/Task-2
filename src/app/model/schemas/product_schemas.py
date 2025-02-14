@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from bson import ObjectId
 
@@ -22,3 +22,13 @@ class ProductUpdate(BaseModel):
     brand: Optional[str]
     images: Optional[List[str]]
     thumbnail: Optional[str]
+
+class ProductLLM(BaseModel):
+    title: str = Field(description="The product title")
+    description: str = Field(description="The product description")
+    category: str = Field(description="The product category")
+    price: float = Field(description="The product price (float)")
+    rating: float = Field(description="The product rating (float)")
+    brand: str = Field(description="The product brand")
+    images: list[str] = Field(description="A list of image URLs (as JSON array)")
+    thumbnail: str = Field(description="The product thumbnail URL")

@@ -44,3 +44,8 @@ class ProductsController:
         headers = {"Content-Disposition": f"attachment; filename=product_{product_id}.json"}
         
         return StreamingResponse(file_like, media_type="application/json", headers=headers)
+
+    async def upload_pdf(self, file, current_user):
+        # Delegate processing of the PDF to the use case.
+        result = await self.products_usecases.process_pdf_upload(file, current_user)
+        return result

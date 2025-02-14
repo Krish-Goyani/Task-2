@@ -4,11 +4,22 @@ from src.app.repositories.user_repository import UserRepository
 from fastapi import Depends, HTTPException, status
 from src.app.config.database import mongodb_database
 from src.app.model.schemas.product_schemas import Product
+from datetime import datetime
+from PyPDF2 import PdfReader
+from src.app.model.schemas.product_schemas import ProductLLM
+from langchain_google_genai import GoogleGenerativeAI 
+from langchain.prompts import PromptTemplate
+from src.app.config.settings import settings
+
 
 class ProductsService:
     def __init__(self, products_collection=Depends(mongodb_database.get_products_collection), user_repository=Depends(UserRepository)) -> None:
         self.products_collection = products_collection
         self.user_repository = user_repository
+        self.llm = GoogleGenerativeAI(
+            model="gemini-1.5-flash",  
+            google_api_key=settings.GEMINI_API_KEY
+        )
 
     async def fetch_products(self) -> dict:
         try:
@@ -56,21 +67,59 @@ class ProductsService:
     async def update_product_service(self, product_id, update_data):
         if not product_id or not update_data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product ID and update data are required")
-        try:
-            update_result = await self.user_repository.update_product_details(product_id, update_data, self.products_collection)
-            if not update_result.modified_count:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found or no changes made")
-            return {"message": "Product updated successfully"}
-        except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to update product: {str(e)}")
+        
+        return await self.user_repository.update_product_details(product_id, update_data, self.products_collection)
 
     async def product_delete_service(self, product_id, product_collection):
         if not product_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product ID is required")
+        return await self.user_repository.delete_product(product_id, product_collection)
+       
+    async def extract_product_from_pdf(self, file) -> dict:
+        """
+        Process the uploaded PDF:
+         1. Extract text using PyPDF2.
+         2. Pass the text to a Gemini Flash model (via LangChain) using a structured output parser
+            to extract product details in JSON format.
+        """
         try:
-            delete_result = await self.user_repository.delete_product(product_id, product_collection)
-            if not delete_result.deleted_count:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-            return {"message": "Product deleted successfully"}
+            pdf_reader = PdfReader(file.file)
+            text = ""
+            for page in pdf_reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+
+        except UnicodeDecodeError as e:
+            raise HTTPException(status_code=400, detail=f"PDF text extraction failed due to encoding issue: {str(e)}")
+        
         except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to delete product: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"An unexpected error occurred while extracting PDF text: {str(e)}")
+        
+        prompt_template = (
+            "Extract product details from the following text and return a JSON object with the keys: "
+            "title, description, category, price, rating, brand, images, thumbnail. "
+            "If a field is missing, return null.\n\n"
+            "Text:\n{text}\n\n"
+            "JSON:"
+        )
+        prompt = PromptTemplate(input_variables=["text"], template=prompt_template)
+        formatted_prompt = prompt.format(text=text)
+    
+        structured_llm = self.llm.with_structured_output(ProductLLM)
+        try:
+            # Invoke the model with the formatted prompt.
+            result = structured_llm.invoke(formatted_prompt)
+            # The result is an instance of ProductLLM.
+            product_data = result.dict()
+        except Exception as e:
+            raise Exception(f"Failed to extract product details using Gemini Flash LLM: {str(e)}")
+        
+        # --- Step 4: Add timestamps ---
+        now = datetime.utcnow().isoformat()
+        product_data["created_at"] = now
+        product_data["updated_at"] = now
+        
+        return product_data
+
+        
