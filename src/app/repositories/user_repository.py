@@ -35,15 +35,15 @@ class UserRepository:
     async def insert_product(self, product, products_collection):
         if not product:
             raise HTTPException(status_code=400, detail="Product data is required")
-
+        product = product.dict()
         product = Product(
-            title=product.title,
-            description=product.description,
-            category=product.category,
-            price=product.price,
-            rating=product.rating,
-            brand=product.brand,
-            seller_id=product.seller_id
+            title=product["title"],
+            description=product["description"],
+            category=product["category"],
+            price=product["price"],
+            rating=product["rating"],
+            brand=product["brand"],
+            seller_id=product["seller_id"]
         )
         return await products_collection.insert_one(product.to_dict())
 

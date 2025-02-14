@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, File
 from src.app.controllers.products_controller import ProductsController
 from src.app.utils.limiter import limiter
 from src.app.utils.security import authorize
@@ -10,7 +10,6 @@ from src.app.model.schemas.product_schemas import ProductUpdate
 from fastapi import UploadFile
 
 products_router = APIRouter(prefix="/products", tags=["Products"])
-
 
 
 @products_router.post("/preload-products/")
@@ -45,17 +44,11 @@ async def delete_product(request: Request,  product_id : str, current_user: User
 @products_router.get("/download/{product_id}")
 async def download_product_detail(product_id : str, products_controller = Depends(ProductsController)):
     return await products_controller.download_product_controller(product_id)
-
-
-'''@products_router.post("/upload-pdf")
+    
+    
+@products_router.post("/upload-pdf/")
 @authorize(role=["seller"])
-async def upload_product_pdf(
-    file: UploadFile,
-    current_user = Depends(get_current_user),  # Ensure seller access
-    controller: ProductsController = Depends()
-):
-    """
-    Allows Sellers to upload a PDF containing product details.
-    The PDF is processed using data loaders and an LLM to extract product details.
-    """
-    return await controller.upload_pdf(file, current_user)'''
+async def upload_product_pdf(file: UploadFile, current_user : User = Depends(get_current_user), product_controller = Depends(ProductsController)):
+
+    return await product_controller.upload_pdf(file, current_user)
+    

@@ -10,16 +10,19 @@ from src.app.model.schemas.product_schemas import ProductLLM
 from langchain_google_genai import GoogleGenerativeAI 
 from langchain.prompts import PromptTemplate
 from src.app.config.settings import settings
-
-
+import pymupdf4llm
+import os
+import tempfile
+from src.app.utils.groq_client import ProductsDetailExtractor
 class ProductsService:
-    def __init__(self, products_collection=Depends(mongodb_database.get_products_collection), user_repository=Depends(UserRepository)) -> None:
+    def __init__(self, products_collection=Depends(mongodb_database.get_products_collection), user_repository=Depends(UserRepository), groq_client = Depends(ProductsDetailExtractor)) -> None:
         self.products_collection = products_collection
         self.user_repository = user_repository
         self.llm = GoogleGenerativeAI(
             model="gemini-1.5-flash",  
             google_api_key=settings.GEMINI_API_KEY
         )
+        self.groq_client = groq_client
 
     async def fetch_products(self) -> dict:
         try:
@@ -83,37 +86,25 @@ class ProductsService:
             to extract product details in JSON format.
         """
         try:
-            pdf_reader = PdfReader(file.file)
-            text = ""
-            for page in pdf_reader.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text += page_text + "\n"
-
-        except UnicodeDecodeError as e:
-            raise HTTPException(status_code=400, detail=f"PDF text extraction failed due to encoding issue: {str(e)}")
-        
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"An unexpected error occurred while extracting PDF text: {str(e)}")
-        
-        prompt_template = (
-            "Extract product details from the following text and return a JSON object with the keys: "
-            "title, description, category, price, rating, brand, images, thumbnail. "
-            "If a field is missing, return null.\n\n"
-            "Text:\n{text}\n\n"
-            "JSON:"
-        )
-        prompt = PromptTemplate(input_variables=["text"], template=prompt_template)
-        formatted_prompt = prompt.format(text=text)
-    
-        structured_llm = self.llm.with_structured_output(ProductLLM)
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                    tmp.write(await file.read())
+                    tmp_path = tmp.name
+                
+                # Convert the PDF to Markdown using pymupdf4llm
+                text = pymupdf4llm.to_markdown(tmp_path)
+                
+        finally:
+            # Clean up the temporary file
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+                
         try:
             # Invoke the model with the formatted prompt.
-            result = structured_llm.invoke(formatted_prompt)
+            result = self.groq_client.extract_details(ProductLLM, text)
             # The result is an instance of ProductLLM.
-            product_data = result.dict()
+            product_data = result.model_dump()
         except Exception as e:
-            raise Exception(f"Failed to extract product details using Gemini Flash LLM: {str(e)}")
+            raise Exception(f"Failed to extract product details using GROQ  LLM: {str(e)}")
         
         # --- Step 4: Add timestamps ---
         now = datetime.utcnow().isoformat()

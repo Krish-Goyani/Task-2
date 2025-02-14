@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     DELEGATE_EMAIL : str
     COMPLAINT_DB_NAME : str
     COMPLAINT_COLLECTION_NAME  : str
+    GROQ_API_KEY : str
+    GROQ_MODEL_NAME : str
         
 
     class Config:

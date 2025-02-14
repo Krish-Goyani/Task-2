@@ -94,7 +94,6 @@ class ProductsUseCases:
         
         # Set the seller_id (if not already set) to the current user's id.
         product_data["seller_id"] = current_user["_id"]
-        
         # Insert the product into the database.
         await self.products_service.insert_product(product_data)
         return {"message": "Product details uploaded and processed successfully"}

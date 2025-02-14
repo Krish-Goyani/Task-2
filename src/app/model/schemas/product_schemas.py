@@ -24,11 +24,11 @@ class ProductUpdate(BaseModel):
     thumbnail: Optional[str]
 
 class ProductLLM(BaseModel):
-    title: str = Field(description="The product title")
-    description: str = Field(description="The product description")
-    category: str = Field(description="The product category")
-    price: float = Field(description="The product price (float)")
-    rating: float = Field(description="The product rating (float)")
-    brand: str = Field(description="The product brand")
-    images: list[str] = Field(description="A list of image URLs (as JSON array)")
-    thumbnail: str = Field(description="The product thumbnail URL")
+    title: str 
+    description: str 
+    category: str 
+    price: float 
+    rating: float
+    brand: str 
+    images: list[str] 
+    thumbnail: str 
